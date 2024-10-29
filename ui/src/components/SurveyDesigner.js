@@ -27,15 +27,17 @@ function SurveyDesigner() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 p-6">
-      <div className="w-1/3 bg-blue-50 rounded-lg p-6 mr-6 shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-blue-800">
+    <div className="grid grid-cols-2 gap-8">
+      <div>
+        <h2 className="text-xl font-semibold text-indigo-600 mb-6">
           Question Designer
         </h2>
-        <QuestionDesigner addQuestion={addQuestion} />
+        <div className="bg-white rounded-lg shadow-md">
+          <QuestionDesigner addQuestion={addQuestion} />
+        </div>
       </div>
-      <div className="w-2/3 bg-green-50 rounded-lg p-6 shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-green-800">
+      <div>
+        <h2 className="text-xl font-semibold text-indigo-600 mb-6">
           Survey Preview
         </h2>
         <SurveyPreview
