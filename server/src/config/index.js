@@ -1,61 +1,22 @@
-require("dotenv").config();
-const path = require("path");
-
-const serviceAccount = require("../credentials/serviceAccountKey.json");
-
 const config = {
   server: {
     port: process.env.PORT || 3001,
     nodeEnv: process.env.NODE_ENV || "development",
+    frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
   },
   mongodb: {
-    uri: process.env.MONGODB_URI || constructMongoUri(),
-    options: {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
+    uri: process.env.MONGODB_URI || "mongodb://localhost:27017/surveysense",
   },
   firebase: {
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    projectId: "surveysense-daa64",
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL?.replace(/"/g, ""),
     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    credential: serviceAccount,
   },
 };
 
-function constructMongoUri() {
-  const {
-    MONGODB_USER,
-    MONGODB_PASSWORD,
-    MONGODB_HOST,
-    MONGODB_PORT,
-    MONGODB_DATABASE,
-  } = process.env;
-
-  if (MONGODB_USER && MONGODB_PASSWORD) {
-    return `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}`;
-  }
-
-  return `mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}`;
-}
-
-// Validate required configuration
-function validateConfig() {
-  const requiredVars = [
-    "mongodb.uri",
-    "firebase.projectId",
-    "firebase.clientEmail",
-    "firebase.privateKey",
-  ];
-
-  requiredVars.forEach((path) => {
-    const value = path.split(".").reduce((obj, key) => obj[key], config);
-    if (!value) {
-      throw new Error(`Missing required config value: ${path}`);
-    }
-  });
-}
-
-validateConfig();
+console.log("=== Firebase Config Check ===");
+console.log("Project ID:", config.firebase.projectId);
+console.log("Client Email:", config.firebase.clientEmail ? "Set" : "Not set");
+console.log("Private Key:", config.firebase.privateKey ? "Set" : "Not set");
 
 module.exports = config;

@@ -8,66 +8,39 @@ const surveyRoutes = require("./routes/surveyRoutes");
 
 const app = express();
 
-// Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-// MongoDB connection with error handling
-async function connectToMongoDB() {
-  try {
-    await mongoose.connect(config.mongodb.uri, config.mongodb.options);
-    console.log("Successfully connected to MongoDB.");
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
+// MongoDB 连接
+mongoose
+  .connect(config.mongodb.uri)
+  .then(() => {
+    console.log("Successfully connected to MongoDB at", config.mongodb.uri);
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
     process.exit(1);
-  }
-}
+  });
 
-// Handle MongoDB connection events
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-mongoose.connection.on("disconnected", () => {
-  console.warn("MongoDB disconnected. Attempting to reconnect...");
-});
-
-mongoose.connection.on("reconnected", () => {
-  console.log("MongoDB reconnected.");
-});
-
-// Initialize connections
-connectToMongoDB();
-
-// Routes
+// API 路由
 app.use("/api/surveys", auth, surveyRoutes);
 
-// Error handling middleware
+// 错误处理
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error(err);
   res.status(500).json({
     error:
-      config.server.nodeEnv === "development"
-        ? err.message
-        : "Internal server error",
+      process.env.NODE_ENV === "development" ? err.message : "Server error",
   });
 });
 
-// Start server
-app.listen(config.server.port, () => {
-  console.log(
-    `Server running in ${config.server.nodeEnv} mode on port ${config.server.port}`
-  );
-});
-
-// Handle uncaught exceptions
-process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
-  process.exit(1);
-});
-
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  process.exit(1);
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

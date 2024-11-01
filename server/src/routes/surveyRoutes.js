@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Survey = require("../models/Survey");
 
-router.post("/save", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { questions } = req.body;
     const userId = req.user.uid;

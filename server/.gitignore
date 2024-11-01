@@ -1,4 +1,4 @@
-src/credentials/*
+src/credentials/serviceAccountKey.json
 *.pem
 *.key
 *.json
